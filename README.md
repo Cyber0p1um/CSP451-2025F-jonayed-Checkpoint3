@@ -4,9 +4,10 @@ Starter repository for CheckPoints 1–3. Use this to begin your assignments.
 
 ## Status Badges
 
-- CI: ![CI](https://github.com/OWNER/REPO/actions/workflows/ci.yml/badge.svg)
-- Pages: ![Deploy](https://github.com/OWNER/REPO/actions/workflows/pages.yml/badge.svg)
-- Coverage: ![codecov](https://codecov.io/gh/OWNER/REPO/branch/main/graph/badge.svg)
+- CI: ![CI](https://github.com/Cyber0p1um/CSP451-2025F-jonayed-Checkpoint3/actions/workflows/ci.yml/badge.svg)
+- Pages: ![Deploy](https://github.com/Cyber0p1um/CSP451-2025F-jonayed-Checkpoint3/actions/workflows/pages.yml/badge.svg)
+- Coverage: ![codecov](https://codecov.io/gh/Cyber0p1um/CSP451-2025F-jonayed-Checkpoint3/branch/main/graph/badge.svg)
+
 
 Replace `OWNER/REPO` with your GitHub path after your first push.
 
@@ -61,6 +62,8 @@ npm run build
 
 - After first push to `main`, enable Pages: Settings > Pages > Source: GitHub Actions.
 - The workflow in `.github/workflows/pages.yml` deploys `dist/`.
+- 🌍 Live site: [https://cyber0p1um.github.io/CSP451-2025F-jonayed-Checkpoint3/](https://cyber0p1um.github.io/CSP451-2025F-jonayed-Checkpoint3/)
+
 
 ## Codecov
 

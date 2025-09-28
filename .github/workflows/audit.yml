@@ -1,0 +1,29 @@
+name: Dependency Audit
+
+on:
+  schedule:
+    - cron: "0 0 * * *"   # daily at midnight UTC
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install & Audit
+        run: |
+          npm ci
+          npm audit --audit-level=high
+      - name: Open Issue if vulnerabilities found
+        if: failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "Dependency vulnerabilities found",
+              body: "Daily npm audit found high/critical issues. Please investigate."
+            })

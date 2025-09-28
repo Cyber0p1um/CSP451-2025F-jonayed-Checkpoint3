@@ -1,0 +1,49 @@
+name: Daily Dependency Audit
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - run: npm ci
+      - name: Run npm audit
+        id: audit
+        run: |
+          set -e
+          npm audit --audit-level=moderate --json > audit.json || true
+          cat audit.json | jq '.metadata.vulnerabilities'
+          count=$(cat audit.json | jq '[.vulnerabilities | to_entries[] | .value | map(select(.severity=="high" or .severity=="critical")) | length] | add // 0')
+          echo "high_crit_count=$count" >> $GITHUB_OUTPUT
+      - name: Create issue if vulnerabilities found
+        if: ${{ fromJson(steps.audit.outputs.high_crit_count) > 0 }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const count = parseInt(process.env.COUNT, 10);
+            const title = `Security audit: ${count} high/critical vulnerabilities`;
+            const body = `Automated audit found ${count} high/critical vulnerabilities.\n\nPlease run \`npm audit fix\` and review transitive dependencies.`;
+            const { data: issue } = await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title,
+              body,
+              labels: ['security', 'automated']
+            });
+            core.info(`Created issue #${issue.number}`);
+        env:
+          COUNT: ${{ steps.audit.outputs.high_crit_count }}
